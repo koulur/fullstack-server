@@ -68,10 +68,12 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const note = request.body
 
+    //Missing name, will accept " "
     if(!note.name) {
         response.status(404).json({error: "missing name"})
     }
 
+    //Missing number, will accept " "
     if(!note.number) {
         response.status(404).json({error: "missing number"})
     }
