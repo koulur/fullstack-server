@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
 
 let notes = [
     { 
@@ -28,6 +29,8 @@ let notes = [
         "id": 5
       }
 ]
+
+app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
@@ -60,6 +63,28 @@ app.delete('/api/persons/:id', (request, response) => {
     notes = notes.filter(note => note.id !== id)
   
     response.status(204).end()
+})
+
+app.post('/api/persons', (request, response) => {
+    const note = request.body
+
+    if(!note.name) {
+        response.status(404).json({error: "missing name"})
+    }
+
+    if(!note.number) {
+        response.status(404).json({error: "missing number"})
+    }
+
+    //If name exists already
+    if(notes.find(person => person.name === note.name)) {
+        response.status(404).json({error: "name must be unique"})
+    }
+
+    note.id = Math.ceil(100000 * Math.random())
+    console.log(note)
+    notes = notes.concat(note)
+    response.json(note)
 })
 
 const PORT = 3001
