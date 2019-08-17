@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
 
 let notes = [
     { 
@@ -29,7 +30,19 @@ let notes = [
         "id": 5
       }
 ]
+morgan.token('type', function (req, res) 
+                { 
+                  if(req.method==="POST") {
+                  const obby = {name: req.body.name,
+                                number: req.body.number}
+                  return  JSON.stringify(obby)
+                  }
+                  return " "
+                }
+)
 
+app.use(morgan('tiny'))
+app.use(morgan(':type'))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
