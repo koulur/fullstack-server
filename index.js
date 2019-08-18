@@ -49,6 +49,7 @@ app.use(morgan(':type'))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
+  console.log("MOI TÄÄLTÄ")
   res.send('<h1>Hello World!</h1>')
 })
 
@@ -105,7 +106,7 @@ app.post('/api/persons', (request, response) => {
     response.json(note)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
