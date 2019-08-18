@@ -47,6 +47,7 @@ morgan.token('type', function (req, res)
 app.use(morgan('tiny'))
 app.use(morgan(':type'))
 app.use(bodyParser.json())
+app.use(express.static('build'))
 
 app.get('/', (req, res) => {
   console.log("MOI TÄÄLTÄ")
