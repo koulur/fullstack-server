@@ -1,8 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
+
 
 app.use(cors())
 
@@ -55,7 +58,15 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(notes)
+  Person.find({})
+  .then(people => {
+    res.json(people.map(person => person.toJSON()))
+    people.map(person => console.log(person))
+  })
+  .catch((error) => {
+    console.log(error.message)
+  })
+  // res.json(notes)
 })
 
 app.get('/info', (req, res) => {
@@ -66,14 +77,15 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const note = notes.find(note => note.id === id)
-    
-    if (note) {
-      response.json(note)
-    } else {
-      response.status(404).end()
-    }
+
+    Person.findById(request.params.id)
+      .then(person => {
+        response.json(person.toJSON())
+      })
+      .catch((error) => {
+        console.log(error.message)
+        response.status(404).end()
+      })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -84,30 +96,36 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-    const note = request.body
 
     //Missing name, will accept " "
-    if(!note.name) {
-        response.status(404).json({error: "missing name"})
+    if(!request.body.name) {
+        response.status(400).json({error: "missing name"})
     }
 
     //Missing number, will accept " "
-    if(!note.number) {
-        response.status(404).json({error: "missing number"})
+    if(!request.body.number) {
+        response.status(400).json({error: "missing number"})
     }
 
     //If name exists already
-    if(notes.find(person => person.name === note.name)) {
+    if(notes.find(person => person.name === request.body.name)) {
         response.status(404).json({error: "name must be unique"})
     }
 
-    note.id = Math.ceil(100000 * Math.random())
-    console.log(note)
-    notes = notes.concat(note)
-    response.json(note)
+    const person = new Person({
+      name: request.body.name,
+      number: request.body.number
+    })
+
+    person.save()
+          .then(savedPerson => {
+            response.json(savedPerson.toJSON())
+          })
+          .catch(error => console.log(error.message)
+          )
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
