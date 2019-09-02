@@ -11,8 +11,16 @@ const url = `mongodb+srv://fullstack:${password}@cluster0-simwd.mongodb.net/pers
 mongoose.connect(url, { useNewUrlParser: true})
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minlength: 1,
+        required: true
+    },
+    number: {
+        type: String,
+        minlength: 5,
+        required: true
+    },
 })
 
 const Person = mongoose.model('Person', personSchema)
