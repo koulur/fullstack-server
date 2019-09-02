@@ -131,6 +131,7 @@ app.post('/api/persons', (request, response, next) => {
 
     person.save()
           .then(savedPerson => {
+            console.log('person saved response okpokpokkf')
             response.json(savedPerson.toJSON())
           })
           .catch(error => next(error)
